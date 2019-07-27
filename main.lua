@@ -6,7 +6,9 @@ function love.load()
         x = 0,
         y = 0,
         width = 50,
-        height = 50
+        height = 50,
+        angle = 0,
+        wiggleRight = true
     }
 
     currentLevel = 1
@@ -15,18 +17,19 @@ function love.load()
             {x = 100, y = 100}, {x = 300, y = 300}
         },
         {
-            {x = 100, y = 100}, {x = 200, y = 200}, {x = 100, y = 350}, {x = 300, y = 300},
-            {x = 200, y = 100}, {x = 300, y = 200}, {x = 200, y = 350}, {x = 300, y = 300},
-            {x = 200, y = 275}, {x = 320, y = 350}
+            {x = 100, y = 100}, {x = 190, y = 200}, {x = 100, y = 350}, {x = 300, y = 300},
+            {x = 190, y = 100}, {x = 300, y = 200}, {x = 190, y = 350}, {x = 300, y = 300},
+            {x = 190, y = 275}, {x = 320, y = 350}
         },
         {
             {x = 200, y = 200},{x = 250, y = 200},{x = 300, y = 200},{x = 350, y = 200},
-            {x = 200, y = 350}, {x = 200, y = 305}
+            {x = 200, y = 350}, {x = 200, y = 302}
         },
     }
     goals = {
         {x = 350, y = 350}, {x = 250, y = 350}, {x = 350, y = 250}
     }
+
     spikeImg = love.graphics.newImage("spike.png")
     grassImg = love.graphics.newImage("grass.png")
 
@@ -45,6 +48,9 @@ function love.load()
 
     hasWon = false
     wonImg = love.graphics.newImage("won.png")
+
+    bgImage = love.graphics.newImage("bg.png")
+
 end
 
 function love.draw()
@@ -57,7 +63,8 @@ function love.draw()
                 love.graphics.draw(startText, 0, 300)
             end
         else
-            love.graphics.draw(player.img, player.x, player.y)
+            love.graphics.draw(bgImage)
+            love.graphics.draw(player.img, player.x, player.y, player.angle)
             for _, spike in ipairs(levels[currentLevel]) do
                 love.graphics.draw(spikeImg, spike.x, spike.y)
             end
@@ -79,6 +86,21 @@ function love.update(dt)
             end
         else
             if not mustMoveCursor then
+
+                if player.wiggleRight then
+                    player.angle = player.angle + dt
+                else
+                    player.angle = player.angle - dt
+                end
+
+                if player.angle > math.pi / 64 then
+                    player.wiggleRight = false
+                end
+
+                if player.angle <  - math.pi / 64 then
+                    player.wiggleRight = true
+                end
+
                 player.x = love.mouse.getX()
                 player.y = love.mouse.getY()
 
